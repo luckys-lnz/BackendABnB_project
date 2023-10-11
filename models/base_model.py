@@ -4,16 +4,25 @@
 import uuid
 from datetime import datetime
 
+
 class BaseModel:
     """ Defines all the instances/attributes
         for other classes, and links to storage
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         """ creating instances """
-        self.id = str(uuid.uuid4())
-        self.created_at = datetime.now()
-        self.updated_at = datetime.now()
+        if kwargs is not None and len(kwargs) != 0:
+            if '__class__' in kwargs:
+                del kwargs['__class__']
+            kwargs['created_at'] = datetime.fromisoformat(kwargs['created_at'])
+            kwargs['updated_at'] = datetime.fromisoformat(kwargs['updated_at'])
+            self.__dict__.update(kwargs)
+
+        else:
+            self.id = str(uuid.uuid4())
+            self.created_at = datetime.now()
+            self.updated_at = datetime.now()
 
     def __str__(self):
         """ returns string representation of the instances """
