@@ -23,17 +23,21 @@ class BaseModel:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
             self.updated_at = datetime.now()
+            from .__init__ import storage
+            storage.new(self)
 
     def __str__(self):
         """ returns string representation of the instances """
         return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
-        """ updates the public instace "updated_at" with current datetime """
+        """ updates the public instance "updated_at" with current datetime """
         self.__dict__['updated_at'] = datetime.now()
+        from .__init__ import storage
+        storage.save()
 
     def to_dict(self):
-        """ Returns keys/vals of __dict__ of the instance """
+        """ Returns keys/values of __dict__ of the instance """
         res_dict = dict(self.__dict__)
         res_dict.update({
             '__class__': self.__class__.__name__,
