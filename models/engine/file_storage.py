@@ -1,42 +1,66 @@
 #!/usr/bin/python3
-""" A storage module"""
+"""
+Serializes instances to a JSON file and deserializes JSON file to instances
+"""
 import json
-from os.path import isfile
+from datetime import datetime
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 
 
 class FileStorage:
     """
-        FileStorage that serializes instances to a JSON file and deserializes JSON file to instances
+    Serializes instances to a JSON file and deserializes JSON file to instances
     """
-    __file_path = "file.json"
+    __file_path = 'file.json'
     __objects = {}
 
     def all(self):
-        """ Returns dictionary __objects"""
-        return self.__objects
+        return FileStorage.__objects
 
     def new(self, obj):
-        """ sets in __object to the obj with key <obj class name>.id """
-        key = "{}.{}".format(obj.__class__.__name__, obj.id)
-        self.__objects[key] = obj
+        key = type(obj).__name__ + '.' + obj.id
+        FileStorage.__objects[key] = obj
 
     def save(self):
-        """ serializes __objects to the JSON file (path: __file_path) """
-        dict_obj = {key: obj.to_dict() for key, obj in self.__objects.items()}
-        with open(self.__file_path, 'w') as f:
-            json.dump(dict_obj, f)
+        """
+        serializes FileStroage.__objects
+        """
+        with open(FileStorage.__file_path, 'w+') as f:
+            dictofobjs = {}
+            for key, value in FileStorage.__objects.items():
+                dictofobjs[key] = value.to_dict()
+            json.dump(dictofobjs, f)
 
     def reload(self):
         """
-            deserializes the JSON file to __objects
-            (only if the JSON file (__file_path) exists
+        deserializes instances got from json file
         """
-        if isfile(self.__file_path):
-            with open(self.__file_path, 'r') as f:
-                dict_obj = json.load(f)
-                for key, data_obj in dict_obj.items():
-                    class_name, obj_id = key.split('.')
-                    data_obj['__class__'] = class_name
-                    instance_obj = eval(class_name)(**data_obj)
-                    self.new(instance_obj)
+        try:
+            with open(FileStorage.__file_path, 'r') as f:
+                dictofobjs = json.loads(f.read())
+                from models.base_model import BaseModel
+                from models.user import User
+                for key, value in dictofobjs.items():
+                    if value['__class__'] == 'BaseModel':
+                        FileStorage.__objects[key] = BaseModel(**value)
+                    elif value['__class__'] == 'User':
+                        FileStorage.__objects[key] = User(**value)
+                    elif value['__class__'] == 'Place':
+                        FileStorage.__objects[key] = Place(**value)
+                    elif value['__class__'] == 'State':
+                        FileStorage.__objects[key] = State(**value)
+                    elif value['__class__'] == 'City':
+                        FileStorage.__objects[key] = City(**value)
+                    elif value['__class__'] == 'Amenity':
+                        FileStorage.__objects[key] = Amenity(**value)
+                    elif value['__class__'] == 'Review':
+                        FileStorage.__objects[key] = Review(**value)
 
+        except FileNotFoundError:
+            pass
+r
