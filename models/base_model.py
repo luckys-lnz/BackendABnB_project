@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-    Defines the base model
+Defines the base model
 """
 import uuid
 from datetime import datetime
@@ -8,13 +8,13 @@ from datetime import datetime
 
 class BaseModel:
     """
-        Defines all common attributes and methods for other classes
-        Also links BaseModel to FileStorage by using the variable storage
+    Defines all common attributes and methods for other classes
+    Also links BaseModel to FileStorage by using the variable storage
     """
 
     def __init__(self, *args, **kwargs):
         """
-            Initializes an instance
+        Initializes an instance
         """
         if kwargs is not None and len(kwargs) != 0:
             if '__class__' in kwargs:
@@ -31,13 +31,13 @@ class BaseModel:
 
     def __str__(self):
         """
-            String representation when instance is printed
+        String representation when instance is printed
         """
         return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
         """
-            Save updates to an instance
+        Save updates to an instance
         """
         self.__dict__.update({'updated_at': datetime.now()})
         from .__init__ import storage
@@ -45,10 +45,11 @@ class BaseModel:
 
     def to_dict(self):
         """
-            Returns a dictionary representation of an instance
+        Returns a dictionary representation of an instance
         """
         dict_result = dict(self.__dict__)
-        dict_result.update({'__class__': type(self).__name__, 'updated_at': self.updated_at.isoformat(),
-                            'id': self.id, 'created_at': self.created_at.isoformat()})
+        dict_result.update({'__class__': type(self).__name__,
+                            'updated_at': self.updated_at.isoformat(), 'id': self.id, 
+                            'created_at': self.created_at.isoformat()})
         return dict_result
 
