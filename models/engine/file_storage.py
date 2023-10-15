@@ -34,9 +34,9 @@ class FileStorage:
         if isfile(self.__file_path):
             with open(self.__file_path, 'r') as f:
                 dict_obj = json.load(f)
-                from models.base_model import BaseModel
                 for key, data_obj in dict_obj.items():
                     class_name, obj_id = key.split('.')
                     data_obj['__class__'] = class_name
                     instance_obj = eval(class_name)(**data_obj)
                     self.new(instance_obj)
+
