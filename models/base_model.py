@@ -1,24 +1,27 @@
 #!/usr/bin/python3
-
-""" Defines BaseModel class """
+"""
+    Defines the base model
+"""
 import uuid
 from datetime import datetime
 
 
 class BaseModel:
-    """ Defines all the instances/attributes
-        for other classes, and links to storage
+    """
+        Defines all common attributes and methods for other classes
+        Also links BaseModel to FileStorage by using the variable storage
     """
 
     def __init__(self, *args, **kwargs):
-        """ creating instances """
+        """
+            Initializes an instance
+        """
         if kwargs is not None and len(kwargs) != 0:
             if '__class__' in kwargs:
                 del kwargs['__class__']
             kwargs['created_at'] = datetime.fromisoformat(kwargs['created_at'])
             kwargs['updated_at'] = datetime.fromisoformat(kwargs['updated_at'])
             self.__dict__.update(kwargs)
-
         else:
             self.id = str(uuid.uuid4())
             self.created_at = datetime.now()
@@ -27,23 +30,25 @@ class BaseModel:
             storage.new(self)
 
     def __str__(self):
-        """ returns string representation of the instances """
-        return f"[{self.__class__.__name__}] ({self.id}) {self.__dict__}"
+        """
+            String representation when instance is printed
+        """
+        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
-        """ updates the public instance "updated_at" with current datetime """
-        self.__dict__['updated_at'] = datetime.now()
+        """
+            Save updates to an instance
+        """
+        self.__dict__.update({'updated_at': datetime.now()})
         from .__init__ import storage
         storage.save()
 
     def to_dict(self):
-        """ Returns keys/values of __dict__ of the instance """
-        res_dict = dict(self.__dict__)
-        res_dict.update({
-            '__class__': self.__class__.__name__,
-            'updated_at': self.updated_at.isoformat(),
-            'id': self.id,
-            'created_at': self.created_at.isoformat()
-        })
-        return res_dict
+        """
+            Returns a dictionary representation of an instance
+        """
+        dict_result = dict(self.__dict__)
+        dict_result.update({'__class__': type(self).__name__, 'updated_at': self.updated_at.isoformat(),
+                            'id': self.id, 'created_at': self.created_at.isoformat()})
+        return dict_result
 
