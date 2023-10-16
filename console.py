@@ -148,6 +148,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, arg):
         """Usage: count <class> or <class>.count()
         Retrieve the number of instances of a given class."""
+
         argl = parse(arg)
         count = 0
         for obj in storage.all().values():
@@ -161,6 +162,7 @@ class HBNBCommand(cmd.Cmd):
        <class>.update(<id>, <dictionary>)
         Update a class instance of a given id by adding or updating
         a given attribute key/value pair or dictionary."""
+
         argl = parse(arg)
         objdict = storage.all()
 
